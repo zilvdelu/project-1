@@ -42,12 +42,12 @@ select{width:100%;background:rgba(0,0,0,0.2);border:1px solid var(--line);color:
 </div>
 
 <div class="box">
-<h3>云端相册（自建接口，永久稳定）</h3>
-<input type="password" id="pwd" placeholder="请输入管理密码">
+<h3>云端相册（直连GitHub，无休眠）</h3>
+<input type="password" id="pwd" placeholder="管理密码：888888">
 <div class="upload-area" id="drop">
 <input type="file" id="file" accept="image/*" multiple>
 <button class="btn" onclick="document.getElementById('file').click()">选择图片</button>
-<p style="color:var(--muted)">手机相册选图，自动存入你的GitHub图床</p>
+<p style="color:var(--muted)">图片直接存入你的GitHub仓库，不会休眠</p>
 </div>
 <input placeholder="图片标题" id="picname">
 <textarea placeholder="图片描述" id="desc"></textarea>
@@ -69,11 +69,9 @@ select{width:100%;background:rgba(0,0,0,0.2);border:1px solid var(--line);color:
 <div class="tip" id="toast"></div>
 
 <script>
-// 配置区
 const OWNER = "zilvdelu";
 const REPO = "imgbed";
-const ADMIN_PWD = "888888"; //改成你的密码
-// 下面不用修改
+const ADMIN_PWD = "888888";
 const CDN = `https://cdn.jsdelivr.net/gh/${OWNER}/${REPO}@main/`;
 let fileObj = null;
 let list = [];
@@ -114,6 +112,11 @@ function render(){
   document.querySelector("#list").innerHTML = html;
 }
 
+async function getToken(){
+  const resp = await fetch("/.netlify/functions/token");
+  return await resp.text();
+}
+
 async function uploadImg(){
   const pwd = document.querySelector("#pwd").value;
   if(pwd !== ADMIN_PWD){toast("密码错误");return}
@@ -121,19 +124,19 @@ async function uploadImg(){
   const btn = document.querySelector("#upbtn");
   btn.disabled = true;
   btn.innerText = "上传中...";
+  const tk = await getToken();
   const reader = new FileReader();
   reader.readAsDataURL(fileObj);
   reader.onload = async e=>{
     const base64 = e.target.result.split(",")[1];
     const filename = `img/${Date.now()}.jpg`;
-    // 固定稳定国内中转，不会失效
-    const api = `https://api.liumingyao.top/ghapi`;
-    await fetch(api,{
-      method:"POST",
-      headers:{"Content-Type":"application/json"},
-      body:JSON.stringify({
-        owner:OWNER,repo:REPO,path:filename,content:base64
-      })
+    await fetch(`https://api.github.com/repos/${OWNER}/${REPO}/contents/${filename}`,{
+      method:"PUT",
+      headers:{
+        "Authorization":`token ${tk}`,
+        "Content-Type":"application/json"
+      },
+      body:JSON.stringify({message:"upload",content:base64})
     })
     list.push({
       src:CDN+filename,
@@ -141,12 +144,15 @@ async function uploadImg(){
       desc:document.querySelector("#desc").value||"",
       tag:document.querySelector("#tag").value
     })
-    await fetch(api,{
-      method:"POST",
-      headers:{"Content-Type":"application/json"},
+    await fetch(`https://api.github.com/repos/${OWNER}/${REPO}/contents/list.json`,{
+      method:"PUT",
+      headers:{
+        "Authorization":`token ${tk}`,
+        "Content-Type":"application/json"
+      },
       body:JSON.stringify({
-        owner:OWNER,repo:REPO,path:"list.json",
-        content:btoa(unescape(encodeURIComponent(JSON.stringify(list))))
+        message:"update",
+        content: btoa(unescape(encodeURIComponent(JSON.stringify(list))))
       })
     })
     fileObj = null;
@@ -155,7 +161,7 @@ async function uploadImg(){
     document.querySelector("#desc").value = "";
     btn.disabled = false;
     btn.innerText = "上传到相册";
-    toast("上传成功，所有人刷新即可看见");
+    toast("上传成功");
     getData();
   }
 }
@@ -163,21 +169,28 @@ async function uploadImg(){
 async function del(idx){
   const p = prompt("输入管理密码");
   if(p !== ADMIN_PWD) return;
+  const tk = await getToken();
   const item = list[idx];
   const path = item.src.replace(CDN,"");
-  const api = `https://api.liumingyao.top/ghapi`;
-  await fetch(api,{
+  let shaRes = await fetch(`https://api.github.com/repos/${OWNER}/${REPO}/contents/${path}`,{
+    headers:{Authorization:`token ${tk}`}
+  })
+  let shaJson = await shaRes.json();
+  await fetch(`https://api.github.com/repos/${OWNER}/${REPO}/contents/${path}`,{
     method:"DELETE",
-    headers:{"Content-Type":"application/json"},
-    body:JSON.stringify({owner:OWNER,repo:REPO,path:path})
+    headers:{Authorization:`token ${tk}`},
+    body:JSON.stringify({message:"delete",sha:shaJson.sha})
   })
   list.splice(idx,1);
-  await fetch(api,{
-    method:"POST",
-    headers:{"Content-Type":"application/json"},
+  await fetch(`https://api.github.com/repos/${OWNER}/${REPO}/contents/list.json`,{
+    method:"PUT",
+    headers:{
+      "Authorization":`token ${tk}`,
+      "Content-Type":"application/json"
+    },
     body:JSON.stringify({
-      owner:OWNER,repo:REPO,path:"list.json",
-      content:btoa(unescape(encodeURIComponent(JSON.stringify(list))))
+      message:"update",
+      content: btoa(unescape(encodeURIComponent(JSON.stringify(list))))
     })
   })
   toast("已删除");
