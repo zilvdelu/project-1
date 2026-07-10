@@ -1,1 +1,817 @@
 # project-1
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>拾光相册 | 共享版</title>
+  <style>
+    :root {
+      --bg: #0f1117;
+      --panel: rgba(255, 255, 255, 0.08);
+      --text: #f7f3ec;
+      --muted: rgba(247, 243, 236, 0.68);
+      --line: rgba(255, 255, 255, 0.14);
+      --gold: #f3c66f;
+      --rose: #e99f8e;
+      --green: #a6d4aa;
+      --danger: #ff8a8a;
+      --shadow: 0 24px 70px rgba(0, 0, 0, 0.38);
+      --radius: 26px;
+    }
+    * {
+      box-sizing: border-box;
+    }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
+      color: var(--text);
+      background:
+        radial-gradient(circle at 20% 10%, rgba(243, 198, 111, 0.18), transparent 28rem),
+        radial-gradient(circle at 82% 5%, rgba(233, 159, 142, 0.15), transparent 26rem),
+        linear-gradient(135deg, #11131b 0%, #171923 45%, #0b0c12 100%);
+    }
+    .shell {
+      width: min(1180px, calc(100% - 36px));
+      margin: 0 auto;
+      padding: 26px 0 58px;
+    }
+    .topbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 18px;
+      margin-bottom: 42px;
+    }
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-weight: 800;
+      letter-spacing: 0.04em;
+    }
+    .logo {
+      width: 42px;
+      height: 42px;
+      border-radius: 15px;
+      display: grid;
+      place-items: center;
+      background: linear-gradient(135deg, var(--gold), var(--rose));
+      color: #15120d;
+    }
+    .nav {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+    a,
+    button {
+      font: inherit;
+    }
+    .btn,
+    .nav a {
+      border: 1px solid var(--line);
+      background: rgba(255, 255, 255, 0.07);
+      color: var(--text);
+      text-decoration: none;
+      border-radius: 999px;
+      padding: 11px 16px;
+      font-size: 14px;
+      cursor: pointer;
+      transition: 0.2s ease;
+      backdrop-filter: blur(12px);
+    }
+    .btn:hover,
+    .nav a:hover {
+      transform: translateY(-1px);
+      background: rgba(255, 255, 255, 0.14);
+    }
+    .primary {
+      background: linear-gradient(135deg, var(--gold), var(--rose));
+      color: #17120c;
+      border: 0;
+      font-weight: 800;
+    }
+    .danger {
+      color: #2b0c0c;
+      background: var(--danger);
+      border: 0;
+      font-weight: 800;
+    }
+    .hero {
+      display: grid;
+      grid-template-columns: 1.1fr 0.9fr;
+      gap: 28px;
+      align-items: stretch;
+      margin-bottom: 34px;
+    }
+    .card,
+    .toolbar,
+    .empty-state {
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: linear-gradient(145deg, rgba(255, 255, 255, 0.11), rgba(255, 255, 255, 0.045));
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(18px);
+    }
+    .hero-card {
+      padding: clamp(28px, 5vw, 54px);
+      position: relative;
+      overflow: hidden;
+    }
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      color: var(--gold);
+      font-size: 14px;
+      margin-bottom: 18px;
+    }
+    .eyebrow::before {
+      content: "";
+      width: 8px;
+      height: 8px;
+      border-radius: 999px;
+      background: var(--gold);
+      box-shadow: 0 0 18px var(--gold);
+    }
+    h1 {
+      margin: 0;
+      font-size: clamp(38px, 7vw, 78px);
+      line-height: 0.98;
+      letter-spacing: -0.06em;
+    }
+    .hero p,
+    .card p,
+    .section-title p {
+      color: var(--muted);
+      line-height: 1.75;
+    }
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+      margin-top: 34px;
+    }
+    .stat {
+      padding: 16px;
+      border-radius: 20px;
+      background: rgba(0, 0, 0, 0.16);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+    .stat strong {
+      display: block;
+      font-size: 24px;
+    }
+    .stat span {
+      color: var(--muted);
+      font-size: 13px;
+    }
+    .upload-card {
+      padding: 24px;
+    }
+    .upload-card h2,
+    .section-title h2 {
+      margin: 0;
+      font-size: 24px;
+      letter-spacing: -0.03em;
+    }
+    .form-grid {
+      display: grid;
+      gap: 12px;
+    }
+    .dropzone {
+      display: grid;
+      place-items: center;
+      min-height: 170px;
+      border: 1.5px dashed rgba(255, 255, 255, 0.28);
+      border-radius: 23px;
+      background: rgba(0, 0, 0, 0.17);
+      text-align: center;
+      cursor: pointer;
+      padding: 20px;
+      transition: 0.2s ease;
+    }
+    .dropzone:hover,
+    .dropzone.dragover {
+      border-color: var(--gold);
+      background: rgba(243, 198, 111, 0.1);
+    }
+    .file-input {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      opacity: 0;
+      overflow: hidden;
+      pointer-events: none;
+      clip-path: inset(50%);
+    }
+    .drop-icon {
+      width: 62px;
+      height: 62px;
+      border-radius: 22px;
+      display: grid;
+      place-items: center;
+      margin: 0 auto 14px;
+      background: rgba(255, 255, 255, 0.11);
+      font-size: 28px;
+    }
+    .pick-button {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 190px;
+      border-radius: 999px;
+      padding: 12px 18px;
+      background: linear-gradient(135deg, var(--gold), var(--rose));
+      color: #17120c;
+      font-weight: 800;
+      cursor: pointer;
+      user-select: none;
+      touch-action: manipulation;
+    }
+    small {
+      display: block;
+      color: var(--muted);
+      margin-top: 10px;
+      line-height: 1.6;
+    }
+    input,
+    textarea,
+    select {
+      width: 100%;
+      border: 1px solid var(--line);
+      outline: none;
+      background: rgba(0, 0, 0, 0.2);
+      color: var(--text);
+      border-radius: 17px;
+      padding: 13px 14px;
+      font: inherit;
+    }
+    textarea {
+      min-height: 76px;
+      resize: vertical;
+    }
+    select option {
+      color: #151515;
+    }
+    .password-row {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 10px;
+    }
+    .hint {
+      padding: 12px 14px;
+      border-radius: 16px;
+      background: rgba(243, 198, 111, 0.1);
+      color: var(--muted);
+      border: 1px solid rgba(243, 198, 111, 0.22);
+      font-size: 13px;
+      line-height: 1.6;
+    }
+    .toolbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      padding: 18px;
+      margin: 22px 0;
+    }
+    .filters {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+    }
+    .chip {
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      padding: 10px 14px;
+      background: rgba(255, 255, 255, 0.06);
+      color: var(--muted);
+      cursor: pointer;
+    }
+    .chip.active {
+      color: #16120d;
+      background: var(--gold);
+      border-color: var(--gold);
+      font-weight: 700;
+    }
+    .gallery {
+      columns: 3 260px;
+      column-gap: 18px;
+    }
+    .photo-card {
+      break-inside: avoid;
+      display: inline-block;
+      width: 100%;
+      margin: 0 0 18px;
+      border: 1px solid var(--line);
+      border-radius: 25px;
+      overflow: hidden;
+      background: rgba(255, 255, 255, 0.07);
+      box-shadow: 0 18px 48px rgba(0, 0, 0, 0.24);
+    }
+    .photo-card img {
+      width: 100%;
+      display: block;
+      background: #222;
+      cursor: zoom-in;
+    }
+    .photo-info {
+      padding: 16px;
+    }
+    .photo-info h3 {
+      margin: 0 0 7px;
+      font-size: 18px;
+    }
+    .photo-info p {
+      margin: 0 0 13px;
+      color: var(--muted);
+      line-height: 1.55;
+      font-size: 14px;
+    }
+    .photo-meta {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      color: var(--muted);
+      font-size: 13px;
+    }
+    .tag {
+      color: #16120d;
+      background: var(--green);
+      padding: 6px 10px;
+      border-radius: 999px;
+      font-weight: 700;
+      display: inline-flex;
+      width: max-content;
+    }
+    .actions {
+      display: flex;
+      gap: 8px;
+      margin-top: 14px;
+    }
+    .actions .btn {
+      flex: 1;
+      text-align: center;
+      padding: 10px 12px;
+    }
+    .empty-state {
+      text-align: center;
+      padding: 52px 24px;
+      color: var(--muted);
+    }
+    .empty-state strong {
+      display: block;
+      color: var(--text);
+      font-size: 24px;
+      margin-bottom: 10px;
+    }
+    .modal {
+      position: fixed;
+      inset: 0;
+      z-index: 20;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      background: rgba(0, 0, 0, 0.74);
+      backdrop-filter: blur(12px);
+    }
+    .modal.open {
+      display: flex;
+    }
+    .modal-box {
+      width: min(1050px, 100%);
+      max-height: 92vh;
+      display: grid;
+      grid-template-columns: 1.3fr 0.7fr;
+      overflow: hidden;
+      border: 1px solid var(--line);
+      border-radius: 28px;
+      background: #151720;
+      box-shadow: var(--shadow);
+    }
+    .modal-image-wrap {
+      background: #050506;
+      display: grid;
+      place-items: center;
+      min-height: 420px;
+    }
+    .modal-image-wrap img {
+      width: 100%;
+      height: 100%;
+      max-height: 92vh;
+      object-fit: contain;
+    }
+    .modal-content {
+      padding: 28px;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+    .modal-content h2 {
+      margin: 0;
+      font-size: 30px;
+      letter-spacing: -0.04em;
+    }
+    .modal-content p {
+      color: var(--muted);
+      line-height: 1.7;
+      margin: 0;
+    }
+    .modal-actions {
+      margin-top: auto;
+      display: grid;
+      gap: 10px;
+    }
+    .close {
+      position: absolute;
+      right: 22px;
+      top: 18px;
+      width: 42px;
+      height: 42px;
+      border-radius: 999px;
+      border: 1px solid var(--line);
+      background: rgba(255, 255, 255, 0.12);
+      color: white;
+      font-size: 24px;
+      cursor: pointer;
+    }
+    .toast {
+      position: fixed;
+      left: 50%;
+      bottom: 24px;
+      transform: translateX(-50%) translateY(20px);
+      opacity: 0;
+      pointer-events: none;
+      z-index: 30;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      padding: 12px 18px;
+      background: rgba(18, 19, 27, 0.92);
+      color: var(--text);
+      transition: 0.25s ease;
+    }
+    .toast.show {
+      opacity: 1;
+      transform: translateX(-50%) translateY(0);
+    }
+    @media (max-width: 860px) {
+      .shell {
+        width: min(100% - 24px, 1180px);
+        padding-top: 16px;
+      }
+      .hero,
+      .modal-box {
+        grid-template-columns: 1fr;
+      }
+      .topbar,
+      .toolbar {
+        align-items: flex-start;
+        flex-direction: column;
+      }
+      .stats,
+      .password-row {
+        grid-template-columns: 1fr;
+      }
+      .pick-button {
+        width: 100%;
+      }
+      .modal-image-wrap {
+        min-height: 280px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="shell">
+    <header class="topbar">
+      <div class="brand">
+        <div class="logo">光</div>
+        <span>拾光相册</span>
+      </div>
+      <nav class="nav" aria-label="页面导航">
+        <a href="#upload">上传</a>
+        <a href="#gallery">公开相册</a>
+      </nav>
+    </header>
+    <section class="hero">
+      <div class="card hero-card">
+        <span class="eyebrow">共享版：朋友打开同一个网址就能看</span>
+        <h1>上传后，大家都能看到。</h1>
+        <p>
+          这个版本会把照片保存到网站服务器里。你用管理密码上传照片，朋友打开网站就能浏览、点开大图和下载原图。
+        </p>
+        <div class="stats">
+          <div class="stat">
+            <strong id="photoCount">0</strong>
+            <span>公开照片</span>
+          </div>
+          <div class="stat">
+            <strong id="categoryCount">0</strong>
+            <span>照片分类</span>
+          </div>
+          <div class="stat">
+            <strong>公开</strong>
+            <span>浏览下载</span>
+          </div>
+        </div>
+      </div>
+      <aside class="card upload-card" id="upload">
+        <h2>管理上传</h2>
+        <p>只有知道管理密码的人可以上传和删除照片。朋友不需要密码，直接浏览和下载。</p>
+        <div class="form-grid">
+          <div class="password-row">
+            <input id="passwordInput" type="password" placeholder="管理密码，默认 123456" autocomplete="current-password" />
+            <button class="btn" id="savePasswordBtn" type="button">记住密码</button>
+          </div>
+          <input class="file-input" id="fileInput" type="file" accept="image/*" multiple />
+          <div class="dropzone" id="dropzone">
+            <span>
+              <span class="drop-icon">↑</span>
+              <label class="pick-button" for="fileInput">从手机相册选择照片</label>
+              <small>手机请点上面的按钮选择照片；电脑也可以把图片拖到这个区域。单张照片最大 20MB。</small>
+            </span>
+          </div>
+          <input id="titleInput" type="text" placeholder="照片标题，例如：傍晚的海边" />
+          <textarea id="descInput" placeholder="照片描述，例如：这是我最喜欢的一张日落照片。"></textarea>
+          <select id="tagInput">
+            <option value="风景">风景</option>
+            <option value="人像">人像</option>
+            <option value="城市">城市</option>
+            <option value="旅行">旅行</option>
+            <option value="日常">日常</option>
+            <option value="其他">其他</option>
+          </select>
+          <button class="btn primary" id="addBtn" type="button">上传到公开相册</button>
+          <div class="hint">正式部署前请把默认管理密码改掉。朋友只需要网址，不需要密码。</div>
+        </div>
+      </aside>
+    </section>
+    <section class="toolbar">
+      <div class="section-title">
+        <h2 id="gallery">公开相册</h2>
+        <p>这里展示服务器里保存的照片，朋友打开网站也会看到同样内容。</p>
+      </div>
+      <div class="filters" id="filters"></div>
+    </section>
+    <section class="gallery" id="galleryGrid" aria-live="polite"></section>
+    <section class="empty-state" id="emptyState">
+      <strong>还没有公开照片</strong>
+      用管理密码上传几张照片后，朋友打开网站就能看到。
+    </section>
+  </main>
+  <div class="modal" id="modal" role="dialog" aria-modal="true" aria-label="照片详情">
+    <button class="close" id="closeModal" type="button" aria-label="关闭">×</button>
+    <div class="modal-box">
+      <div class="modal-image-wrap">
+        <img id="modalImg" alt="" />
+      </div>
+      <div class="modal-content">
+        <span class="tag" id="modalTag"></span>
+        <h2 id="modalTitle"></h2>
+        <p id="modalDesc"></p>
+        <p id="modalFile"></p>
+        <div class="modal-actions">
+          <a class="btn primary" id="modalDownload" href="#" download>下载原图</a>
+          <button class="btn danger" id="modalDelete" type="button">删除这张照片</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="toast" id="toast"></div>
+  <script>
+    const fileInput = document.querySelector("#fileInput");
+    const dropzone = document.querySelector("#dropzone");
+    const titleInput = document.querySelector("#titleInput");
+    const descInput = document.querySelector("#descInput");
+    const tagInput = document.querySelector("#tagInput");
+    const passwordInput = document.querySelector("#passwordInput");
+    const savePasswordBtn = document.querySelector("#savePasswordBtn");
+    const addBtn = document.querySelector("#addBtn");
+    const galleryGrid = document.querySelector("#galleryGrid");
+    const emptyState = document.querySelector("#emptyState");
+    const filters = document.querySelector("#filters");
+    const photoCount = document.querySelector("#photoCount");
+    const categoryCount = document.querySelector("#categoryCount");
+    const modal = document.querySelector("#modal");
+    const closeModal = document.querySelector("#closeModal");
+    const modalImg = document.querySelector("#modalImg");
+    const modalTitle = document.querySelector("#modalTitle");
+    const modalDesc = document.querySelector("#modalDesc");
+    const modalTag = document.querySelector("#modalTag");
+    const modalFile = document.querySelector("#modalFile");
+    const modalDownload = document.querySelector("#modalDownload");
+    const modalDelete = document.querySelector("#modalDelete");
+    const toast = document.querySelector("#toast");
+    let photos = [];
+    let selectedFiles = [];
+    let activeTag = "全部";
+    let currentPhotoId = null;
+    passwordInput.value = localStorage.getItem("galleryAdminPassword") || "";
+    function showToast(message) {
+      toast.textContent = message;
+      toast.classList.add("show");
+      window.clearTimeout(showToast.timer);
+      showToast.timer = window.setTimeout(() => toast.classList.remove("show"), 2200);
+    }
+    function formatSize(bytes) {
+      if (!bytes) return "未知大小";
+      const units = ["B", "KB", "MB", "GB"];
+      let size = bytes;
+      let unitIndex = 0;
+      while (size >= 1024 && unitIndex < units.length - 1) {
+        size /= 1024;
+        unitIndex += 1;
+      }
+      return `${size.toFixed(size >= 10 || unitIndex === 0 ? 0 : 1)} ${units[unitIndex]}`;
+    }
+    function getAdminPassword() {
+      return passwordInput.value.trim();
+    }
+    function buildFilters() {
+      const tags = ["全部", ...new Set(photos.map((photo) => photo.tag))];
+      filters.innerHTML = tags.map((tag) => (
+        `<button class="chip ${tag === activeTag ? "active" : ""}" type="button" data-tag="${tag}">${tag}</button>`
+      )).join("");
+    }
+    function renderStats() {
+      photoCount.textContent = photos.length;
+      categoryCount.textContent = new Set(photos.map((photo) => photo.tag)).size;
+    }
+    function renderGallery() {
+      buildFilters();
+      renderStats();
+      const visiblePhotos = activeTag === "全部" ? photos : photos.filter((photo) => photo.tag === activeTag);
+      emptyState.style.display = visiblePhotos.length ? "none" : "block";
+      galleryGrid.innerHTML = visiblePhotos.map((photo) => `
+        <article class="photo-card">
+          <img src="${photo.url}" alt="${photo.title}" data-open="${photo.id}" />
+          <div class="photo-info">
+            <h3>${photo.title}</h3>
+            <p>${photo.description || "这张照片还没有描述。"}</p>
+            <div class="photo-meta">
+              <span class="tag">${photo.tag}</span>
+              <span>${formatSize(photo.size)}</span>
+            </div>
+            <div class="actions">
+              <button class="btn" type="button" data-open="${photo.id}">查看</button>
+              <a class="btn" href="${photo.downloadUrl}">下载</a>
+            </div>
+          </div>
+        </article>
+      `).join("");
+    }
+    async function loadPhotos() {
+      const response = await fetch("/api/photos");
+      if (!response.ok) throw new Error("读取照片失败");
+      photos = await response.json();
+      renderGallery();
+    }
+    function openPhoto(id) {
+      const photo = photos.find((item) => item.id === id);
+      if (!photo) return;
+      currentPhotoId = id;
+      modalImg.src = photo.url;
+      modalImg.alt = photo.title;
+      modalTitle.textContent = photo.title;
+      modalDesc.textContent = photo.description || "这张照片还没有描述。";
+      modalTag.textContent = photo.tag;
+      modalFile.textContent = `文件：${photo.originalName || photo.fileName}，大小：${formatSize(photo.size)}`;
+      modalDownload.href = photo.downloadUrl;
+      modal.classList.add("open");
+    }
+    function closePhoto() {
+      modal.classList.remove("open");
+      currentPhotoId = null;
+      modalImg.removeAttribute("src");
+    }
+    function handleFileSelection(files) {
+      selectedFiles = [...files].filter((file) => file.type.startsWith("image/"));
+      if (!selectedFiles.length) {
+        showToast("请选择图片文件");
+        return;
+      }
+      dropzone.querySelector(".pick-button").textContent = `已选择 ${selectedFiles.length} 张照片`;
+      showToast(`已选择 ${selectedFiles.length} 张照片`);
+    }
+    async function uploadSelectedPhotos() {
+      const password = getAdminPassword();
+      if (!password) {
+        showToast("请先填写管理密码");
+        return;
+      }
+      if (!selectedFiles.length) {
+        showToast("请先选择照片");
+        return;
+      }
+      const formData = new FormData();
+      selectedFiles.forEach((file) => formData.append("photos", file));
+      formData.append("title", titleInput.value.trim());
+      formData.append("description", descInput.value.trim());
+      formData.append("tag", tagInput.value);
+      addBtn.disabled = true;
+      addBtn.textContent = "正在上传...";
+      try {
+        const response = await fetch("/api/photos", {
+          method: "POST",
+          headers: {
+            "x-admin-password": password
+          },
+          body: formData
+        });
+        const result = await response.json().catch(() => ({}));
+        if (!response.ok) {
+          throw new Error(result.message || "上传失败");
+        }
+        selectedFiles = [];
+        fileInput.value = "";
+        titleInput.value = "";
+        descInput.value = "";
+        dropzone.querySelector(".pick-button").textContent = "从相册选择照片";
+        await loadPhotos();
+        showToast("照片已上传，朋友刷新页面就能看到");
+      } catch (error) {
+        showToast(error.message);
+      } finally {
+        addBtn.disabled = false;
+        addBtn.textContent = "上传到公开相册";
+      }
+    }
+    async function deleteCurrentPhoto() {
+      const password = getAdminPassword();
+      if (!password) {
+        showToast("请先填写管理密码");
+        return;
+      }
+      if (!currentPhotoId) return;
+      const confirmed = window.confirm("确定要删除这张照片吗？");
+      if (!confirmed) return;
+      try {
+        const response = await fetch(`/api/photos/${currentPhotoId}`, {
+          method: "DELETE",
+          headers: {
+            "x-admin-password": password
+          }
+        });
+        const result = await response.json().catch(() => ({}));
+        if (!response.ok) {
+          throw new Error(result.message || "删除失败");
+        }
+        closePhoto();
+        await loadPhotos();
+        showToast("照片已删除");
+      } catch (error) {
+        showToast(error.message);
+      }
+    }
+    savePasswordBtn.addEventListener("click", () => {
+      localStorage.setItem("galleryAdminPassword", getAdminPassword());
+      showToast("管理密码已保存在当前浏览器");
+    });
+    fileInput.addEventListener("change", (event) => handleFileSelection(event.target.files));
+    addBtn.addEventListener("click", uploadSelectedPhotos);
+    dropzone.addEventListener("dragover", (event) => {
+      event.preventDefault();
+      dropzone.classList.add("dragover");
+    });
+    dropzone.addEventListener("dragleave", () => {
+      dropzone.classList.remove("dragover");
+    });
+    dropzone.addEventListener("drop", (event) => {
+      event.preventDefault();
+      dropzone.classList.remove("dragover");
+      handleFileSelection(event.dataTransfer.files);
+    });
+    filters.addEventListener("click", (event) => {
+      const button = event.target.closest("[data-tag]");
+      if (!button) return;
+      activeTag = button.dataset.tag;
+      renderGallery();
+    });
+    galleryGrid.addEventListener("click", (event) => {
+      const target = event.target.closest("[data-open]");
+      if (!target) return;
+      openPhoto(target.dataset.open);
+    });
+    closeModal.addEventListener("click", closePhoto);
+    modal.addEventListener("click", (event) => {
+      if (event.target === modal) closePhoto();
+    });
+    modalDelete.addEventListener("click", deleteCurrentPhoto);
+    window.addEventListener("keydown", (event) => {
+      if (event.key === "Escape" && modal.classList.contains("open")) {
+        closePhoto();
+      }
+    });
+    loadPhotos().catch((error) => {
+      console.error(error);
+      showToast("服务器还没启动，或照片读取失败");
+    });
+  </script>
+</body>
+</html>
