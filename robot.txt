@@ -1,0 +1,15 @@
+# 禁止一切爬虫、搜索引擎、AI机器人
+User-agent: *
+Disallow: /
+
+# 单独屏蔽各大AI爬虫（GPT、豆包、谷歌AI等）
+User-agent: GPTBot
+Disallow: /
+User-agent: ChatGPT-User
+Disallow: /
+User-agent: Google-Extended
+Disallow: /
+User-agent: ClaudeBot
+Disallow: /
+User-agent: PerplexityBot
+Disallow: /
