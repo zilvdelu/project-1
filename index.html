@@ -3,51 +3,46 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>拾光共享相册</title>
+<title>共享相册</title>
 <style>
-:root{--bg:#0f1117;--panel:rgba(255,255,255,0.08);--text:#f7f3ec;--muted:rgba(247,243,236,0.68);--line:rgba(255,255,255,0.14);--gold:#f3c66f;--rose:#e99f8e;--green:#a6d4aa;--danger:#ff8a8a;--shadow:0 24px 70px rgba(0,0,0,0.38);--radius:26px;}
-*{box-sizing:border-box}
-body{margin:0;min-height:100vh;font-family:system-ui,sans-serif;color:var(--text);background:radial-gradient(circle at 20% 10%,rgba(243,198,111,0.18),transparent 28rem),radial-gradient(circle at 82% 5%,rgba(233,159,142,0.15),transparent 26rem),linear-gradient(135deg,#11131b 0%,#171923 45%,#0b0c12 100%)}
-.wrap{width:min(1180px,calc(100% - 36px));margin:0 auto;padding:26px 0 60px}
-.top{display:flex;justify-content:space-between;align-items:center;margin-bottom:30px}
-.title{font-size:22px;font-weight:bold;display:flex;gap:10px;align-items:center}
-.box{border:1px solid var(--line);border-radius:var(--radius);background:linear-gradient(145deg,rgba(255,255,255,0.11),rgba(255,255,255,0.045));backdrop-filter:blur(18px);padding:24px;margin-bottom:20px}
-.upload-area{border:1.5px dashed rgba(255,255,255,0.28);border-radius:23px;padding:30px;text-align:center;margin:15px 0;cursor:pointer}
-.btn{background:linear-gradient(135deg,var(--gold),var(--rose));border:0;color:#111;padding:12px 20px;border-radius:999px;font-weight:bold;font-size:16px}
-input{width:100%;background:rgba(0,0,0,0.2);border:1px solid var(--line);color:#fff;padding:13px;border-radius:16px;margin:8px 0}
-textarea{width:100%;background:rgba(0,0,0,0.2);border:1px solid var(--line);color:white;padding:13px;border-radius:16px;min-height:80px}
-select{width:100%;background:rgba(0,0,0,0.2);border:1px solid var(--line);color:#fff;padding:13px;border-radius:16px;margin:8px 0}
-.album{columns:3 260px;column-gap:16px}
-.img-card{break-inside:avoid;width:100%;margin-bottom:16px;border-radius:22px;overflow:hidden;background:#191919}
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:#0f1117;color:#f7f3ec;font-family:system-ui}
+.wrap{max-width:700px;margin:0 auto;padding:20px}
+.box{border:1px solid rgba(255,255,255,0.15);border-radius:26px;padding:24px;margin-bottom:20px;background:rgba(255,255,255,0.05)}
+.upload-area{border:1.5px dashed rgba(255,255,255,0.28);border-radius:23px;padding:30px;text-align:center;margin:16px 0}
+.btn{width:100%;background:linear-gradient(135deg,#f3c66f,#e99f8e);border:0;color:#111;padding:14px;border-radius:16px;font-weight:bold;font-size:16px;margin-top:10px}
+input,textarea,select{width:100%;background:rgba(0,0,0,0.2);border:1px solid rgba(255,255,255,0.14);color:#fff;padding:14px;border-radius:16px;margin:8px 0;font-size:16px}
+.album{columns:3 160px;gap:16px}
+.img-card{break-inside:avoid;margin-bottom:16px;border-radius:22px;overflow:hidden;background:#191919}
 .img-card img{width:100%;display:block}
 .info{padding:14px}
-.name{font-weight:bold;margin:0}
-.desc{color:var(--muted);font-size:14px}
+.name{font-weight:bold}
+.desc{opacity:0.68;font-size:14px;margin-top:4px}
 .foot-btn{display:flex;gap:10px;margin-top:12px}
-.small-btn{border:1px solid var(--line);background:rgba(255,255,255,0.07);color:#fff;padding:8px;border-radius:999px;font-size:14px}
+.small-btn{border:1px solid rgba(255,255,255,0.14);background:rgba(255,255,255,0.07);color:#fff;padding:8px;border-radius:14px;font-size:14px;width:50%}
 #file{display:none}
 .modal{position:fixed;inset:0;background:rgba(0,0,0,0.85);display:none;align-items:center;justify-content:center;padding:20px}
 .modal.show{display:flex}
 .modal-img{max-width:95%;max-height:90vh}
-.close{position:fixed;top:20px;right:20px;font-size:30px;color:white;background:none;border:none}
-.tip{position:fixed;bottom:30px;left:50%;transform:translateX(-50%);background:#222;color:white;padding:10px 20px;border-radius:999px;opacity:0;transition:0.2s}
+.close{position:fixed;top:20px;right:20px;font-size:30px;color:#fff;background:none;border:none}
+.tip{position:fixed;bottom:30px;left:50%;transform:translateX(-50%);background:#222;color:white;padding:10px 20px;border-radius:16px;opacity:0;transition:0.2s}
 .tip.show{opacity:1}
 </style>
 </head>
 <body>
 <div class="wrap">
-<div class="top">
-<div class="title">拾光共享相册</div>
-<div><span id="num">0</span> 张图片</div>
+<div class="top" style="display:flex;justify-content:space-between;align-items:center;margin-bottom:30px">
+<div class="title" style="font-size:22px;font-weight:bold">共享相册</div>
+<div><span id="num">0</span> 张照片</div>
 </div>
 
 <div class="box">
-<h3>云端相册（直连GitHub，无休眠）</h3>
+<h3>云端相册</h3>
 <input type="password" id="pwd" placeholder="管理密码：888888">
 <div class="upload-area" id="drop">
-<input type="file" id="file" accept="image/*" multiple>
+<input type="file" id="file" accept="image/*">
 <button class="btn" onclick="document.getElementById('file').click()">选择图片</button>
-<p style="color:var(--muted)">图片直接存入你的GitHub仓库，不会休眠</p>
+<p style="opacity:0.68;margin-top:10px">自动存入你的GitHub图床</p>
 </div>
 <input placeholder="图片标题" id="picname">
 <textarea placeholder="图片描述" id="desc"></textarea>
@@ -58,7 +53,7 @@ select{width:100%;background:rgba(0,0,0,0.2);border:1px solid var(--line);color:
 <option>旅行</option>
 <option>其他</option>
 </select>
-<button class="btn" onclick="uploadImg()" id="upbtn">上传到相册</button>
+<button class="btn" onclick="uploadImg()" id="upbtn">上传图片</button>
 </div>
 <div class="album" id="list"></div>
 </div>
@@ -72,6 +67,7 @@ select{width:100%;background:rgba(0,0,0,0.2);border:1px solid var(--line);color:
 const OWNER = "zilvdelu";
 const REPO = "imgbed";
 const ADMIN_PWD = "888888";
+const API = "https://gh.liumingyao.top/api";
 const CDN = `https://cdn.jsdelivr.net/gh/${OWNER}/${REPO}@main/`;
 let fileObj = null;
 let list = [];
@@ -83,7 +79,7 @@ function toast(s){
   setTimeout(()=>t.classList.remove("show"),2200);
 }
 
-async function getData(){
+async function loadList(){
   try{
     const res = await fetch(CDN+"list.json");
     list = await res.json();
@@ -95,48 +91,27 @@ function render(){
   document.querySelector("#num").innerText = list.length;
   let html = "";
   list.forEach((item,i)=>{
-    html+=`
-    <div class="img-card">
-    <img src="${item.src}" onclick="openImg('${item.src}')">
-    <div class="info">
-    <div class="name">${item.title}</div>
-    <div class="desc">${item.desc}</div>
-    <div class="foot-btn">
-    <button class="small-btn" onclick="del(${i})">删除</button>
-    <a class="small-btn" href="${item.src}" download>下载</a>
-    </div>
-    </div>
-    </div>
-    `
+    html+=`<div class="img-card"><img src="${item.src}" onclick="openImg('${item.src}')"><div class="info"><div class="name">${item.title}</div><div class="desc">${item.desc}</div><div class="foot-btn"><button class="small-btn" onclick="del(${i})">删除</button><a class="small-btn" href="${item.src}" download>下载</a></div></div></div>`
   })
   document.querySelector("#list").innerHTML = html;
-}
-
-async function getToken(){
-  const resp = await fetch("/.netlify/functions/token");
-  return await resp.text();
 }
 
 async function uploadImg(){
   const pwd = document.querySelector("#pwd").value;
   if(pwd !== ADMIN_PWD){toast("密码错误");return}
-  if(!fileObj){toast("请选择图片");return}
+  if(!fileObj){toast("请先选择图片");return}
   const btn = document.querySelector("#upbtn");
   btn.disabled = true;
   btn.innerText = "上传中...";
-  const tk = await getToken();
   const reader = new FileReader();
   reader.readAsDataURL(fileObj);
   reader.onload = async e=>{
     const base64 = e.target.result.split(",")[1];
     const filename = `img/${Date.now()}.jpg`;
-    await fetch(`https://api.github.com/repos/${OWNER}/${REPO}/contents/${filename}`,{
-      method:"PUT",
-      headers:{
-        "Authorization":`token ${tk}`,
-        "Content-Type":"application/json"
-      },
-      body:JSON.stringify({message:"upload",content:base64})
+    await fetch(`${API}/upload`,{
+      method:"POST",
+      headers:{"Content-Type":"application/json"},
+      body:JSON.stringify({owner:OWNER,repo:REPO,path:filename,content:base64})
     })
     list.push({
       src:CDN+filename,
@@ -144,15 +119,12 @@ async function uploadImg(){
       desc:document.querySelector("#desc").value||"",
       tag:document.querySelector("#tag").value
     })
-    await fetch(`https://api.github.com/repos/${OWNER}/${REPO}/contents/list.json`,{
-      method:"PUT",
-      headers:{
-        "Authorization":`token ${tk}`,
-        "Content-Type":"application/json"
-      },
+    await fetch(`${API}/upload`,{
+      method:"POST",
+      headers:{"Content-Type":"application/json"},
       body:JSON.stringify({
-        message:"update",
-        content: btoa(unescape(encodeURIComponent(JSON.stringify(list))))
+        owner:OWNER,repo:REPO,path:"list.json",
+        content:btoa(unescape(encodeURIComponent(JSON.stringify(list))))
       })
     })
     fileObj = null;
@@ -160,41 +132,33 @@ async function uploadImg(){
     document.querySelector("#picname").value = "";
     document.querySelector("#desc").value = "";
     btn.disabled = false;
-    btn.innerText = "上传到相册";
-    toast("上传成功");
-    getData();
+    btn.innerText = "上传图片";
+    toast("上传成功，所有人刷新即可看到");
+    loadList();
   }
 }
 
 async function del(idx){
   const p = prompt("输入管理密码");
   if(p !== ADMIN_PWD) return;
-  const tk = await getToken();
   const item = list[idx];
   const path = item.src.replace(CDN,"");
-  let shaRes = await fetch(`https://api.github.com/repos/${OWNER}/${REPO}/contents/${path}`,{
-    headers:{Authorization:`token ${tk}`}
-  })
-  let shaJson = await shaRes.json();
-  await fetch(`https://api.github.com/repos/${OWNER}/${REPO}/contents/${path}`,{
+  await fetch(`${API}/del`,{
     method:"DELETE",
-    headers:{Authorization:`token ${tk}`},
-    body:JSON.stringify({message:"delete",sha:shaJson.sha})
+    headers:{"Content-Type":"application/json"},
+    body:JSON.stringify({owner:OWNER,repo:REPO,path:path})
   })
   list.splice(idx,1);
-  await fetch(`https://api.github.com/repos/${OWNER}/${REPO}/contents/list.json`,{
-    method:"PUT",
-    headers:{
-      "Authorization":`token ${tk}`,
-      "Content-Type":"application/json"
-    },
+  await fetch(`${API}/upload`,{
+    method:"POST",
+    headers:{"Content-Type":"application/json"},
     body:JSON.stringify({
-      message:"update",
-      content: btoa(unescape(encodeURIComponent(JSON.stringify(list))))
+        owner:OWNER,repo:REPO,path:"list.json",
+        content:btoa(unescape(encodeURIComponent(JSON.stringify(list))))
     })
   })
   toast("已删除");
-  getData();
+  loadList();
 }
 
 document.querySelector("#file").onchange = e=>fileObj = e.target.files[0];
@@ -204,8 +168,7 @@ drop.ondrop = e=>{e.preventDefault();fileObj = e.dataTransfer.files[0];toast("�
 function openImg(s){document.querySelector("#bigimg").src=s;document.querySelector("#bigbox").classList.add("show")}
 function closeImg(){document.querySelector("#bigbox").classList.remove("show")}
 document.querySelector("#bigbox").onclick = e=>{if(e.target === document.querySelector("#bigbox")) closeImg()}
-getData();
+loadList();
 </script>
 </body>
 </html>
-
